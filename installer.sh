@@ -31,6 +31,7 @@ check_dep () {
                         CURRENT_FILE=$(($CURRENT_FILE + 1))
 				        dpkg -i $TMP_PATH/node_latest_armhf.deb
                         npm upgrade npm -g
+				fi
 }
 	
 install_apps () {
@@ -94,18 +95,26 @@ make_dir () {
 make_config () {
 
     			if [ -f /etc/cups/cups-pdf.conf ]; then
-	
 	    			sed -i "s|Out ${HOME}/PDF|Out /storage/pdf|" /etc/cups/cups-pdf.conf
-		    		sed -i "s|Listen localhost:631|Listen *:631|" /etc/cups/cupsd.conf
-			    	sed -i "s||Allow alln|g" /etc/cups/cupsd.conf
-				    sed -i "s|Shared No|Shared Yes|g" /etc/cups/printers.conf
-				    sed -i -e "s|BrowseAddress|BrowseAddress $(ifconfig $IFACE | awk '/inet addr/{print substr($2,6)}') n#BrowseAddress|" /etc/cups/cupsd.conf
-				    sed -i "s|#PostProcessing|PostProcessing /usr/local/bin/cups-pdf-renamer|" /etc/cups/cups-pdf.conf
-				    echo  -e "nServerName $name" >> /etc/cups/cupsd.conf
-
-			    else
-				    echo "File does not exists"
+		    		sed -i "s|#PostProcessing|PostProcessing /usr/local/bin/cups-pdf-renamer|" /etc/cups/cups-pdf.conf
+				else
+				    echo "cups-pdf.conf does not exists"
 			    fi
+
+				if [ -f /etc/cups/cupsd.conf ]; then
+					echo  -e "nServerName $name" >> /etc/cups/cupsd.conf
+					sed -i "s|Listen localhost:631|Listen *:631|" /etc/cups/cupsd.conf
+			    	sed -i "s||Allow alln|g" /etc/cups/cupsd.conf
+				    sed -i -e "s|BrowseAddress|BrowseAddress $(ifconfig $IFACE | awk '/inet addr/{print substr($2,6)}') n#BrowseAddress|" /etc/cups/cupsd.conf
+				else
+				    echo "cupsd.conf does not exists"
+			    fi  
+
+				if [ -f /etc/cups/printers.conf ]; then
+					sed -i "s|Shared No|Shared Yes|g" /etc/cups/printers.conf
+				else
+					echo "printers.conf does not exists"
+			    fi  
 
 			    cupsctl --share-printers --remote-admin --remote-printers
     			lpoptions -d PDF -o printer-is-shared=true
@@ -123,7 +132,10 @@ browseable=yes
 create mask=0666
 directory mask=0666
 EOT
-
+				else
+					echo "smb.conf does not exists"
+				fi
+				
 			    cloudprint -c
 }
 
