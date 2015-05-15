@@ -1,0 +1,48 @@
+#/bin/bash
+#configuration
+iface=eth0
+
+#variables
+logfile=/var/log/printer.log
+printer=$(lsusb | grep -Ei '(Printer$)' | awk '{ print $7 $8, $9 "",$10 }')
+ip=$(ifconfig $iface | awk '/inet addr/{print substr($2,6)}')
+
+show_help()
+{
+        printf "\nHelp menu \n\n"
+        echo "-h        Show help message"
+        echo "-i        Startup Services"
+        echo "-m        Print to report log"
+        printf "\nversion: $getversion\n\n"
+}
+
+option="${1}"
+case ${option} in
+
+                -i) printf "System rebooted: $(date)\n" >>$logfile
+                        printf "Printer loaded: $printer\n" >>$logfile
+                        /usr/bin/mservice
+                        printf "Mintr: Loaded\n" >>$logfile
+                        /usr/local/bin/cloudprint >> $logfile &
+                        printf "Cloudprint: Loaded\n" >>$logfile
+                        /usr/bin/airprint/airprint-generate.py -d /etc/avahi/services
+                        printf "Airprint: Loaded\n" >>$logfile
+                ;;
+
+                -m)  
+                        ink -p usb > /dev/null 
+                                sleep 25 
+                        echo
+                        echo "----- monthly report -----" >> $logfile
+                        printf "Printer Levels\n" >> $logfile
+                        ink -p usb | grep -E 'Black|Yellow|Magenta|Cyan' >> $logfile
+                        printf "$(date +"%A: %F %T")\n">> $logfile
+                        ip=$(ifconfig eth0 | awk '/inet addr/{print substr($2,6)}')
+                        echo "----- monthly report ----" >> $logfile
+                        printf "\nMessage:%s\n\nCups Server is available at: http://$ip:613\nTo managage the system printer enter this link into your browser to modify settings for the system\n\nPrinter is online at: https://www.google.com/cloudprint#printers\nfor more to manage your printer enter this link into your browser \"chrome://devices/\"\n\nMintr is started: http://$ip\nTo see system preformace visit the link enter the address in your browser\n" >>$logfile
+                ;;
+
+                *) show_help
+                exit 1
+                ;;
+esac

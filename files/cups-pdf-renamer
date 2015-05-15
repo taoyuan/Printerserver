@@ -1,0 +1,7 @@
+#!/bin/bash
+FILENAME=`basename $1`
+DIRNAME=`dirname $1`
+DATE=`date +"%F-%H%M"`
+DIRNAME="/storage/pdf"
+mv $1 $DIRNAME"/"$DATE"_"$FILENAME
+chmod 666 /storage/pdf/*

@@ -1,0 +1,13 @@
+#!/bin/sh
+service=mintr
+
+PIDS=`ps ax | grep -iE '(node\s/usr/local/bin/mintr\s80)' | grep -o '^[ ]*[0-9]*'`
+
+if [ -z "$PIDS" ]; then
+        printf "Service not found, Starting up...\n"
+        su $USER -c 'node /usr/local/bin/mintr 80 < /dev/null &'
+        else
+for PID in $PIDS; do
+exit 1
+done
+fi
