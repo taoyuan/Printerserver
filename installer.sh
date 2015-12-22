@@ -6,7 +6,11 @@ TMP_PATH=/tmp
 IFACE=eth0
 APT='avahi-daemon cups python-cups printer-driver-gutenprint system-config-printer-udev python-pip cups-pdf pip install git python-daemon ink samba preload logrotate'
 
-if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
+#root check
+if [ $USER != root ]; then
+        echo  "Error: must be root"
+        exit 0
+fi
 
 check_dep () {
 
