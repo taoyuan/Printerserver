@@ -4,7 +4,7 @@ AMOUNT_FILES=1
 RAWURL='http://node-arm.herokuapp.com/node_latest_armhf.deb'
 TMP_PATH=/tmp
 IFACE=eth0
-APT='avahi-daemon cups python-cups printer-driver-gutenprint system-config-printer-udev python-pip cups-pdf pip install git python-daemon ink samba preload logrotate'
+APT='python-dev avahi-daemon cups python-cups printer-driver-gutenprint system-config-printer-udev python-pip cups-pdf pip install git python-daemon ink samba preload logrotate'
 
 #root check
 if [ $USER != root ]; then
