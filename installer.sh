@@ -72,6 +72,7 @@ install_apps () {
 					    git pull
 				    else
 					    git clone https://github.com/tjfontaine/airprint-generate /usr/bin/airprint
+					fi
 			    else
 				    apt-get -q -y git
 				    git clone https://github.com/tjfontaine/airprint-generate /usr/bin/airprint
